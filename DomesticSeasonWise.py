@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import os
+#import os
 import numpy as np
 
 # --- Define Constants ---
@@ -10,15 +10,15 @@ DEFAULT_TEAM = 'Select a Team'
 # --- 1. Data Loading Function (Cached) ---
 @st.cache_data
 def load_data(file_name):
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(script_dir, file_name)
+    # script_dir = os.path.dirname(os.path.abspath(__file__))
+    # file_path = os.path.join(script_dir, file_name)
     
-    if not os.path.exists(file_path):
-        st.error(f"FATAL ERROR: The file '{file_name}' was not found.")
-        return pd.DataFrame()
+    # if not os.path.exists(file_path):
+    #     st.error(f"FATAL ERROR: The file '{file_name}' was not found.")
+    #     return pd.DataFrame()
 
     try:
-        df = pd.read_excel(file_path)
+        df = pd.read_excel(file_name)
         return df
     except Exception as e:
         st.error(f"Error reading '{file_name}': {e}")
