@@ -85,7 +85,7 @@ def app(season_restricted_stats_final):
             st.warning(f"No data for {season_code}")
             return None
 
-        # Calculations
+         # Calculations
         row = stats.iloc[0]
         g_pg = row['Goals/Game']
         xg_pg = row['Expected Goals/Game']
@@ -94,53 +94,132 @@ def app(season_restricted_stats_final):
         poss = row['Average_Possession']
         ppg = (3*row['Wins'] + row['Draws']) / row['matches']
         
+        tackles_pg = row['Tackles_Tkl/Game']
+        tacklesW_pg = row['Tackles_TklW/Game']/ row['Tackles_Tkl/Game']
+
+
+        tackesdef3rd_perct_pg = row['Tackles_Def_3rd/Game'] / tackles_pg
+        tackesmid3rd_perct_pg = row['Tackles_Mid_3rd/Game'] / tackles_pg
+        tacklesatt3rd_perct_pg = row['Tackles_Att_3rd/Game'] /tackles_pg
+        
+        CrdY_ppg = row["CrdY/Game"]
+        foulscommitted_ppg = row["Fouls_Commited/Game"]
+        foulsdrawn_ppg = row["Fouls_Drawn/Game"]
+
+
+
         ontarget = row['Shot_OnTarget/Game']
         total_shots = row['Shots_Taken/Game']
         acc = ontarget / total_shots if total_shots > 0 else 0
 
         # UI Rendering based on stat_view
         if stat_view == "Attacking":
-            st.metric("Goals/Game", f"{g_pg:.2f}", delta=f"{g_pg - xg_pg:+.2f} vs xG")
+            st.metric("Goals", f"{g_pg:.2f}", delta=f"{g_pg - xg_pg:+.2f} vs xG")
+        
+            st.caption("Shots")
             
-            delta_poss = f"{poss - prev_stats['poss']:.0f}% vs Prev" if prev_stats else None
-            st.metric("Possession", f"{poss:.0f}%", delta=delta_poss)
-            
-            delta_acc = f"{(acc - prev_stats['acc'])*100:+.1f}% vs Prev" if prev_stats else None
-            st.metric("Target Accuracy", f"{acc*100:.1f}%", delta=delta_acc)
-            
-            delta_ot = f"{ontarget - prev_stats['ontarget']:+.1f} vs Prev" if prev_stats else None
-            st.metric("On-Target/Game", f"{ontarget:.1f}", delta=delta_ot)
+            delta_ot = f"{ontarget - prev_stats['ontarget']:+.1f} vs Prev" if prev_stats else '-'
+            if delta_ot != '-':
+                st.metric("#On-Target", f"{ontarget:.1f}", delta=delta_ot)
+            else:
+                st.metric("#On-Target", f"{ontarget:.1f}", delta=delta_ot,delta_color="off",delta_arrow="off")
 
+            delta_acc = f"{(acc - prev_stats['acc'])*100:+.1f}% vs Prev" if prev_stats else '-'
+            if delta_acc != '-':
+                st.metric("On-Target Accuracy", f"{acc*100:.1f}%", delta=delta_acc)
+            else:
+                st.metric("On-Target Accuracy", f"{acc*100:.1f}%", delta=delta_acc,delta_color="off",delta_arrow="off")
+            
+        
         elif stat_view == "Defensive":
-            st.metric("Goals Conceded/Game", f"{gc_pg:.2f}", delta=f"{gc_pg - xga_pg:+.2f} vs xGA", delta_color='inverse')
+            st.metric("Goals Conceded", f"{gc_pg:.2f}", delta=f"{gc_pg - xga_pg:+.2f} vs xGA", delta_color='inverse')
+
+            
+            st.caption("Tackles:")
+
+            delta_tackles = f"{(tackles_pg - prev_stats['tackles_pg']):.1f}% vs Prev" if prev_stats else '-'
+            if delta_tackles != '-':
+                st.metric("Tackles Attempted", f"{tackles_pg:.1f}",delta=f"{delta_tackles}")
+            else:
+                st.metric("Tackles Attempted", f"{tackles_pg:.1f}",delta=f"{delta_tackles}",delta_color="off",delta_arrow="off")
+
+            
+            delta_tacklesW = f"{(tacklesW_pg - prev_stats['tacklesW_pg'])*100:+.1f}% vs Prev" if prev_stats else '-'
+            if delta_tacklesW !='-':
+                st.metric("Tackles Won", f"{tacklesW_pg*100:.1f}%",delta=f"{delta_tacklesW}")
+            else:
+                st.metric("Tackles Won", f"{tacklesW_pg*100:.1f}%",delta=f"{delta_tacklesW}",delta_color="off",delta_arrow="off")
+
+            st.caption("Tackles Intensity:")
+
+            delta_tacklesatt3rd = f"{(tacklesatt3rd_perct_pg - prev_stats['tacklesatt3rd_perct_pg'])*100:+.1f}% vs Prev" if prev_stats else '-'
+            if delta_tacklesatt3rd !='-':
+                st.metric("Tackles in Att 3rd", f"{tacklesatt3rd_perct_pg*100:.1f}",delta=f"{delta_tacklesatt3rd}")
+            else:
+               st.metric("Tackles in Att 3rd", f"{tacklesatt3rd_perct_pg*100:.1f}",delta=f"{delta_tacklesatt3rd}",delta_color="off",delta_arrow="off")
+
+            delta_tacklesdef3rd = f"{(tackesdef3rd_perct_pg - prev_stats['tackesdef3rd_perct_pg'])*100:+.1f}% vs Prev" if prev_stats else '-'
+            if delta_tacklesdef3rd !='-':
+                st.metric("Tackles in Def 3rd", f"{tackesdef3rd_perct_pg*100:.1f}",delta=f"{delta_tacklesdef3rd}")
+            else:
+               st.metric("Tackles in Def 3rd", f"{tackesdef3rd_perct_pg*100:.1f}",delta=f"{delta_tacklesdef3rd}",delta_color="off",delta_arrow="off")
+            
 
         else: # Overall
-            delta_ppg = f"{ppg - prev_stats['ppg']:+.2f} vs Prev" if prev_stats else None
-            st.metric("Points/Game", f"{ppg:.1f}", delta=delta_ppg)
+            delta_ppg = f"{ppg - prev_stats['ppg']:+.2f} vs Prev" if prev_stats else '-'
+            if delta_ppg!='-':
+                st.metric("Points", f"{ppg:.1f}", delta=delta_ppg)
+            else:
+                st.metric("Points", f"{ppg:.1f}", delta=delta_ppg,delta_color="off",delta_arrow="off")
 
-        return {"poss": poss, "acc": acc, "ontarget": ontarget, "ppg": ppg}
+            delta_poss = f"{poss - prev_stats['poss']:.0f}% vs Prev" if prev_stats else '-'
+            if delta_poss != '-':
+                st.metric("Possession", f"{poss:.0f}%", delta=delta_poss)
+            else:
+                st.metric("Possession", f"{poss:.0f}%", delta=delta_poss,delta_color="off",delta_arrow="off")
+
+            delta_CrdY_ppg = f"{CrdY_ppg - prev_stats['CrdY_ppg']:+.1f} vs Prev" if prev_stats else '-'
+            if delta_CrdY_ppg != '-':
+                st.metric("Yellow Cards", f"{CrdY_ppg:.1f}", delta=delta_CrdY_ppg)
+            else:
+                st.metric("Yellow Cards", f"{CrdY_ppg:.1f}", delta=delta_CrdY_ppg,delta_color="off",delta_arrow="off")
+            
+            delta_fouls_commited = f"{(foulscommitted_ppg - prev_stats['foulscommitted_ppg']):.1f}% vs Prev" if prev_stats else '-'
+            if delta_fouls_commited!='-':
+                st.metric("Fouls Committed", f"{foulscommitted_ppg:.1f}",delta=f"{delta_fouls_commited}",delta_color='inverse')
+            else:
+                st.metric("Fouls Committed", f"{foulscommitted_ppg:.1f}",delta=f"{delta_fouls_commited}",delta_color="off",delta_arrow="off")
+            
+            delta_foulsdrawn = f"{(foulsdrawn_ppg - prev_stats['foulsdrawn_ppg']):.1f}% vs Prev" if prev_stats else '-'
+            if delta_foulsdrawn !='-':
+                st.metric("Fouls Drawn", f"{foulsdrawn_ppg:.1f}",delta=f"{delta_foulsdrawn}")
+            else:
+                st.metric("Fouls Drawn", f"{foulsdrawn_ppg:.1f}",delta=f"{delta_foulsdrawn}",delta_color="off",delta_arrow="off")
+
+        return {"poss": poss, "acc": acc, "ontarget": ontarget, "ppg": ppg,"tackles_pg":tackles_pg,"tacklesW_pg":tacklesW_pg,"tackesdef3rd_perct_pg":tackesdef3rd_perct_pg,
+                "tacklesatt3rd_perct_pg":tacklesatt3rd_perct_pg,"CrdY_ppg":CrdY_ppg,"foulscommitted_ppg":foulscommitted_ppg,"foulsdrawn_ppg":foulsdrawn_ppg}
 
     # Execute Rendering
     with main_col1:
         st.write(f"**{sel_team_1}**")
         s1, s2 = st.columns(2)
         with s1:
-            st.caption("2024/25")
-            t1_s1_data = render_team_season_metrics(sel_team_1, 2425)
+            st.caption("2024/25: Per Game")
+            t1_s1_data = render_team_season_metrics(sel_team_1, '2024/2025')
         with s2:
-            st.caption("2025/26")
-            render_team_season_metrics(sel_team_1, 2526, prev_stats=t1_s1_data)
+            st.caption("2025/26: Per Game")
+            render_team_season_metrics(sel_team_1, '2025/2026', prev_stats=t1_s1_data)
 
     with main_col2:
         st.write(f"**{sel_team_2}**")
         s1, s2 = st.columns(2)
         with s1:
-            st.caption("2024/25")
-            t2_s1_data = render_team_season_metrics(sel_team_2, 2425)
+            st.caption("2024/25: Per Game")
+            t2_s1_data = render_team_season_metrics(sel_team_2, '2024/2025')
         with s2:
-            st.caption("2025/26")
-            render_team_season_metrics(sel_team_2, 2526, prev_stats=t2_s1_data)
+            st.caption("2025/26: Per Game")
+            render_team_season_metrics(sel_team_2, '2025/2026', prev_stats=t2_s1_data)
 
 if __name__ == '__main__':
-    df_main = load_data('FBREF - Processed.xlsx')
+    df_main = load_data('1226_FBREF Aggregated.xlsx')
     app(df_main)
