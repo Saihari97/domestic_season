@@ -137,7 +137,7 @@ def app(season_restricted_stats_final):
             
             st.caption("Tackles:")
 
-            delta_tackles = f"{(tackles_pg - prev_stats['tackles_pg']):.1f}% vs Prev" if prev_stats else '-'
+            delta_tackles = f"{(tackles_pg - prev_stats['tackles_pg']):.1f} vs Prev" if prev_stats else '-'
             if delta_tackles != '-':
                 st.metric("Tackles Attempted", f"{tackles_pg:.1f}",delta=f"{delta_tackles}")
             else:
@@ -223,4 +223,5 @@ def app(season_restricted_stats_final):
 if __name__ == '__main__':
     df_main = load_data('1226_FBREF Aggregated.xlsx')
     app(df_main)
+
 
