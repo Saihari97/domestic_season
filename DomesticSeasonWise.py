@@ -154,15 +154,15 @@ def app(season_restricted_stats_final):
 
             delta_tacklesatt3rd = f"{(tacklesatt3rd_perct_pg - prev_stats['tacklesatt3rd_perct_pg'])*100:+.1f}% vs Prev" if prev_stats else '-'
             if delta_tacklesatt3rd !='-':
-                st.metric("Tackles in Att 3rd", f"{tacklesatt3rd_perct_pg*100:.1f}",delta=f"{delta_tacklesatt3rd}")
+                st.metric("Tackles in Att 3rd", f"{tacklesatt3rd_perct_pg*100:.1f}%",delta=f"{delta_tacklesatt3rd}")
             else:
-               st.metric("Tackles in Att 3rd", f"{tacklesatt3rd_perct_pg*100:.1f}",delta=f"{delta_tacklesatt3rd}",delta_color="off",delta_arrow="off")
+               st.metric("Tackles in Att 3rd", f"{tacklesatt3rd_perct_pg*100:.1f}%",delta=f"{delta_tacklesatt3rd}",delta_color="off",delta_arrow="off")
 
             delta_tacklesdef3rd = f"{(tackesdef3rd_perct_pg - prev_stats['tackesdef3rd_perct_pg'])*100:+.1f}% vs Prev" if prev_stats else '-'
             if delta_tacklesdef3rd !='-':
-                st.metric("Tackles in Def 3rd", f"{tackesdef3rd_perct_pg*100:.1f}",delta=f"{delta_tacklesdef3rd}")
+                st.metric("Tackles in Def 3rd", f"{tackesdef3rd_perct_pg*100:.1f}%",delta=f"{delta_tacklesdef3rd}")
             else:
-               st.metric("Tackles in Def 3rd", f"{tackesdef3rd_perct_pg*100:.1f}",delta=f"{delta_tacklesdef3rd}",delta_color="off",delta_arrow="off")
+               st.metric("Tackles in Def 3rd", f"{tackesdef3rd_perct_pg*100:.1f}%",delta=f"{delta_tacklesdef3rd}",delta_color="off",delta_arrow="off")
             
 
         else: # Overall
@@ -223,3 +223,4 @@ def app(season_restricted_stats_final):
 if __name__ == '__main__':
     df_main = load_data('1226_FBREF Aggregated.xlsx')
     app(df_main)
+
